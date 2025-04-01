@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="ar">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>X CRYPTO News</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            direction: rtl;
+            text-align: center;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #222;
+            color: #fff;
+            padding: 15px;
+        }
+
+        #posts-container {
+            max-width: 600px;
+            margin: 20px auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .post {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .post:last-child {
+            border-bottom: none;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>أحدث منشورات X CRYPTO</h1>
+    </header>
+
+    <main id="posts-container">
+        <p>جاري تحميل المنشورات...</p>
+    </main>
+
+    <script>
+        const botToken = "7710995750:AAG9Y5EkoYIm8fbVfB_3Bjqzzl9_YgFUH5w"; // استبدل هذا بالتوكن الخاص بك
+        const channelUsername = "@X_CRYPTO_1"; // تأكد من صحة معرف القناة
+
+        async function fetchTelegramPosts() {
+            try {
+                const response = await fetch(`https://api.telegram.org/bot${botToken}/getUpdates`);
+                const data = await response.json();
+
+                const messages = data.result
+                    .filter(update => update.channel_post && update.channel_post.chat.username === channelUsername.replace("@", ""))
+                    .map(update => update.channel_post);
+
+                displayPosts(messages);
+            } catch (error) {
+                console.error("حدث خطأ أثناء جلب المنشورات:", error);
+            }
+        }
+
+        function displayPosts(posts) {
+            const container = document.getElementById("posts-container");
+            container.innerHTML = ""; // مسح المحتوى السابق
+
+            if (posts.length === 0) {
+                container.innerHTML = "<p>لم يتم العثور على منشورات.</p>";
+                return;
+            }
+
+            posts.forEach(post => {
+                const postElement = document.createElement("div");
+                postElement.className = "post";
+                postElement.innerHTML = `<p>${post.text || "منشور بدون نص"}</p>`;
+                container.appendChild(postElement);
+            });
+        }
+
+        fetchTelegramPosts();
+        setInterval(fetchTelegramPosts, 60000); // تحديث كل دقيقة
+    </script>
+</body>
+  </html>
